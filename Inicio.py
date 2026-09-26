@@ -1,5 +1,5 @@
 """
-☁️ WordCloud Studio — Versión con Alto Contraste y Legibilidad Garantizada
+☁️ WordCloud Studio — Legibilidad y Contraste Total
 """
 
 import streamlit as st
@@ -12,7 +12,7 @@ from collections import Counter
 from wordcloud import WordCloud, STOPWORDS
 
 # ─────────────────────────────────────────────
-# CONFIGURACIÓN
+# CONFIGURACIÓN DE PÁGINA
 # ─────────────────────────────────────────────
 st.set_page_config(
     page_title="WordCloud Studio",
@@ -22,7 +22,7 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────
-# ESTILOS — Forzado de contraste (Modo claro/oscuro compatible)
+# ESTILOS REFORZADOS (Fuerza fondo blanco y texto oscuro)
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -32,38 +32,64 @@ st.markdown("""
         font-family: 'Inter', sans-serif !important;
     }
 
-    /* Fondo de la aplicación */
+    /* Fondo principal de la aplicación */
     .stApp {
         background-color: #f8fafc !important;
     }
 
-    /* ── MENÚ LATERAL (SIDEBAR) ── */
+    /* BARRA LATERAL */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #e2e8f0 !important;
     }
-    
-    /* Forzar color oscuro en absolutamente TODOS los textos del Sidebar */
+
+    /* Títulos y etiquetas del Sidebar */
     [data-testid="stSidebar"] *, 
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] div {
+    [data-testid="stSidebar"] h3 {
         color: #0f172a !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-        color: #1e293b !important;
-        font-weight: 600 !important;
-        font-size: 0.88rem !important;
+    /* ── REPARACIÓN DE DESPLEGABLES Y CAJAS DE TEXTO ── */
+    /* Cajas principales de Selectbox, Text Input y Textarea */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="base-input"],
+    input[type="text"],
+    textarea {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
     }
 
-    /* ── ÁREA PRINCIPAL ── */
+    /* Texto seleccionado visible dentro de los desplegables */
+    div[data-baseweb="select"] *,
+    div[data-baseweb="input"] * {
+        color: #0f172a !important;
+        background-color: transparent !important;
+    }
+
+    /* Menú desplegable emergente (Popover listbox) */
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] *,
+    ul[role="listbox"],
+    li[role="option"] {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+
+    /* Hover en opciones del desplegable */
+    li[role="option"]:hover {
+        background-color: #f1f5f9 !important;
+    }
+
+    /* ── TÍTULOS Y CABECERA ── */
     .title-container h1 {
-        font-size: 2.1rem !important;
+        font-size: 2rem !important;
         font-weight: 700 !important;
         color: #0f172a !important;
         margin-bottom: 0.2rem !important;
@@ -71,49 +97,6 @@ st.markdown("""
     .title-container p {
         color: #475569 !important;
         font-size: 0.95rem !important;
-    }
-
-    /* Forzar etiquetas principales */
-    [data-testid="stWidgetLabel"] p {
-        color: #0f172a !important;
-        font-weight: 600 !important;
-    }
-
-    /* ── CUADRO DE TEXTO (TEXTAREA) Y DESPLEGABLES ── */
-    textarea {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 8px !important;
-        font-size: 0.95rem !important;
-    }
-    textarea::placeholder {
-        color: #94a3b8 !important;
-    }
-    textarea:focus {
-        border-color: #0f172a !important;
-        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
-    }
-
-    /* Selectbox y Dropdowns */
-    [data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 6px !important;
-        color: #0f172a !important;
-    }
-    [data-baseweb="select"] span {
-        color: #0f172a !important;
-    }
-
-    /* ── PESTAÑAS (TABS) ── */
-    button[data-baseweb="tab"] {
-        color: #64748b !important;
-        font-weight: 600 !important;
-    }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #0f172a !important;
-        border-bottom-color: #0f172a !important;
     }
 
     /* ── BOTONES ── */
@@ -124,7 +107,6 @@ st.markdown("""
         border-radius: 6px !important;
         font-weight: 600 !important;
         padding: 0.55rem 1.2rem !important;
-        transition: background-color 0.2s ease !important;
     }
     .stButton > button:hover {
         background-color: #1e293b !important;
@@ -134,19 +116,23 @@ st.markdown("""
     [data-testid="stDownloadButton"] > button {
         background-color: #334155 !important;
         color: #ffffff !important;
-        border-radius: 6px !important;
         font-weight: 600 !important;
     }
-    [data-testid="stDownloadButton"] > button:hover {
-        background-color: #0f172a !important;
+
+    /* ── PESTAÑAS Y MÉTRICAS ── */
+    button[data-baseweb="tab"] {
+        color: #64748b !important;
+        font-weight: 600 !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #0f172a !important;
+        border-bottom-color: #0f172a !important;
     }
 
-    /* Métricas */
     [data-testid="metric-container"] {
         background: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 8px !important;
-        padding: 14px !important;
     }
     [data-testid="metric-container"] label {
         color: #64748b !important;
@@ -222,7 +208,7 @@ def generar_wordcloud(texto_limpio, paleta_nombre, max_words, fondo, forma):
     return fig
 
 # ─────────────────────────────────────────────
-# PANEL LATERAL (Personalización)
+# PANEL LATERAL
 # ─────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Personalización")
@@ -249,7 +235,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Pestañas de entrada
 tab_pegar, tab_subir = st.tabs(["✍️ Pegar / Escribir Texto", "📂 Subir Archivo (.txt / .csv)"])
 
 texto_input = ""
@@ -281,7 +266,6 @@ with tab_subir:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Botón de generación
 btn_generar = st.button("🚀 Generar Nube de Palabras", use_container_width=True)
 
 # ─────────────────────────────────────────────
