@@ -1,5 +1,5 @@
 """
-☁️ WordCloud Studio — Nube de Palabras Profesional (Versión Simplificada)
+☁️ WordCloud Studio — Versión con Alto Contraste y Legibilidad Garantizada
 """
 
 import streamlit as st
@@ -22,65 +22,137 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────
-# ESTILOS — Limpios, sobrios y ejecutivos
+# ESTILOS — Forzado de contraste (Modo claro/oscuro compatible)
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', sans-serif !important;
     }
+
+    /* Fondo de la aplicación */
     .stApp {
-        background-color: #f8fafc;
+        background-color: #f8fafc !important;
+    }
+
+    /* ── MENÚ LATERAL (SIDEBAR) ── */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0 !important;
     }
     
-    /* Contenedor principal estilizado */
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+    /* Forzar color oscuro en absolutamente TODOS los textos del Sidebar */
+    [data-testid="stSidebar"] *, 
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] div {
+        color: #0f172a !important;
     }
-    
-    /* Título principal */
-    .title-container {
-        margin-bottom: 1.5rem;
+
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+        color: #1e293b !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
     }
+
+    /* ── ÁREA PRINCIPAL ── */
     .title-container h1 {
-        font-size: 2rem !important;
+        font-size: 2.1rem !important;
         font-weight: 700 !important;
         color: #0f172a !important;
         margin-bottom: 0.2rem !important;
     }
     .title-container p {
-        color: #64748b !important;
+        color: #475569 !important;
         font-size: 0.95rem !important;
     }
 
-    /* Estilo del Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e2e8f0;
+    /* Forzar etiquetas principales */
+    [data-testid="stWidgetLabel"] p {
+        color: #0f172a !important;
+        font-weight: 600 !important;
     }
 
-    /* Botón principal */
+    /* ── CUADRO DE TEXTO (TEXTAREA) Y DESPLEGABLES ── */
+    textarea {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        font-size: 0.95rem !important;
+    }
+    textarea::placeholder {
+        color: #94a3b8 !important;
+    }
+    textarea:focus {
+        border-color: #0f172a !important;
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
+    }
+
+    /* Selectbox y Dropdowns */
+    [data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        color: #0f172a !important;
+    }
+    [data-baseweb="select"] span {
+        color: #0f172a !important;
+    }
+
+    /* ── PESTAÑAS (TABS) ── */
+    button[data-baseweb="tab"] {
+        color: #64748b !important;
+        font-weight: 600 !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #0f172a !important;
+        border-bottom-color: #0f172a !important;
+    }
+
+    /* ── BOTONES ── */
     .stButton > button {
-        background: #0f172a !important;
+        background-color: #0f172a !important;
         color: #ffffff !important;
         border: none !important;
         border-radius: 6px !important;
         font-weight: 600 !important;
-        padding: 0.5rem 1.2rem !important;
+        padding: 0.55rem 1.2rem !important;
+        transition: background-color 0.2s ease !important;
     }
     .stButton > button:hover {
-        background: #1e293b !important;
+        background-color: #1e293b !important;
     }
 
-    /* Métricas sencillas */
+    /* Botón de descarga */
+    [data-testid="stDownloadButton"] > button {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+    }
+    [data-testid="stDownloadButton"] > button:hover {
+        background-color: #0f172a !important;
+    }
+
+    /* Métricas */
     [data-testid="metric-container"] {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 12px;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 14px !important;
+    }
+    [data-testid="metric-container"] label {
+        color: #64748b !important;
+    }
+    [data-testid="metric-container"] [data-testid="stMetricValue"] {
+        color: #0f172a !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -150,34 +222,34 @@ def generar_wordcloud(texto_limpio, paleta_nombre, max_words, fondo, forma):
     return fig
 
 # ─────────────────────────────────────────────
-# PANEL LATERAL (Configuración estética y filtros)
+# PANEL LATERAL (Personalización)
 # ─────────────────────────────────────────────
 with st.sidebar:
-    st.subheader("⚙️ Personalización")
+    st.markdown("### ⚙️ Personalización")
     
     paleta_sel = st.selectbox("Paleta de colores", list(PALETAS.keys()))
-    fondo_sel = st.radio("Fondo", ["Blanco", "Negro"], horizontal=True)
+    fondo_sel = st.radio("Fondo de la nube", ["Blanco", "Negro"], horizontal=True)
     fondo_color = "white" if fondo_sel == "Blanco" else "black"
     forma_sel = st.selectbox("Forma", ["Rectángulo", "Círculo"])
     max_words = st.slider("Máx. palabras visualizadas", 20, 200, 80)
     
     st.divider()
-    st.subheader("🧹 Filtro de Texto")
+    st.markdown("### 🧹 Filtro de Texto")
     idioma = st.selectbox("Eliminar conectores en:", ["Español", "Inglés", "Ambos", "Ninguno"])
     min_longitud = st.slider("Longitud mínima de palabra", 2, 6, 3)
-    palabras_extra = st.text_input("Excluir palabras específicas (separadas por coma):", placeholder="ej: ejemplo, texto, pag")
+    palabras_extra = st.text_input("Excluir palabras específicas:", placeholder="ej: ejemplo, texto, pag")
 
 # ─────────────────────────────────────────────
-# CONTENIDO PRINCIPAL (Uso directo)
+# CONTENIDO PRINCIPAL
 # ─────────────────────────────────────────────
 st.markdown("""
 <div class="title-container">
     <h1>☁️ WordCloud Studio</h1>
-    <p>Genera nubes de palabras de manera rápida, limpia y profesional.</p>
+    <p>Genera nubes de palabras profesionales de manera rápida y sencilla.</p>
 </div>
 """, unsafe_allow_html=True)
 
-# Pestañas principales de entrada
+# Pestañas de entrada
 tab_pegar, tab_subir = st.tabs(["✍️ Pegar / Escribir Texto", "📂 Subir Archivo (.txt / .csv)"])
 
 texto_input = ""
@@ -190,39 +262,38 @@ with tab_pegar:
             
     val_def = st.session_state.get("texto_main", "")
     texto_input = st.text_area(
-        "Pega tu texto aquí:",
+        "Ingresa tu texto aquí:",
         value=val_def,
-        height=180,
+        height=190,
         placeholder="Escribe o pega aquí el artículo, respuestas de encuestas, discursos...",
         label_visibility="collapsed"
     )
 
 with tab_subir:
-    archivo = st.file_uploader("Selecciona un archivo de texto o CSV:", type=["txt", "csv"])
+    archivo = st.file_uploader("Selecciona un archivo (.txt o .csv):", type=["txt", "csv"])
     if archivo:
         if archivo.name.endswith(".txt"):
             texto_input = archivo.read().decode("utf-8", errors="ignore")
         elif archivo.name.endswith(".csv"):
             df_csv = pd.read_csv(archivo)
-            col_txt = st.selectbox("Selecciona la columna con el texto:", df_csv.columns.tolist())
+            col_txt = st.selectbox("Selecciona la columna que contiene el texto:", df_csv.columns.tolist())
             texto_input = " ".join(df_csv[col_txt].dropna().astype(str).tolist())
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Botón destacado de generación
+# Botón de generación
 btn_generar = st.button("🚀 Generar Nube de Palabras", use_container_width=True)
 
 # ─────────────────────────────────────────────
-# PROCESAMIENTO Y RESULTADOS
+# RESULTADOS
 # ─────────────────────────────────────────────
 if btn_generar or (texto_input.strip() and "auto_run" not in st.session_state):
     st.session_state["auto_run"] = True
     
     if not texto_input.strip():
-        st.warning("⚠️ Por favor pega un texto o sube un archivo para poder generar la nube.")
+        st.warning("⚠️ Ingresa un texto o sube un archivo antes de generar.")
         st.stop()
 
-    # Preprar stopwords
     sw = set()
     if idioma in ("Español", "Ambos"): sw |= STOPWORDS_ES
     if idioma in ("Inglés", "Ambos"): sw |= set(STOPWORDS)
@@ -232,28 +303,26 @@ if btn_generar or (texto_input.strip() and "auto_run" not in st.session_state):
     texto_limpio, df_freq = limpiar_y_contar(texto_input, sw, min_longitud)
 
     if not texto_limpio.strip():
-        st.error("No se encontraron palabras válidas con los filtros actuales. Intenta reducir la longitud mínima.")
+        st.error("No se encontraron palabras válidas. Ajusta la longitud mínima o los filtros.")
         st.stop()
 
-    # Muestras métricas clave
     c1, c2, c3 = st.columns(3)
     c1.metric("Total palabras analizadas", f"{len(texto_limpio.split()):,}")
     c2.metric("Vocabulario único", f"{len(df_freq):,}")
     c3.metric("Palabra más frecuente", df_freq.iloc[0]["Palabra"] if not df_freq.empty else "-")
 
-    # Renderizar Imagen
+    st.markdown("<br>", unsafe_allow_html=True)
+
     fig_wc = generar_wordcloud(texto_limpio, paleta_sel, max_words, fondo_color, forma_sel)
     st.pyplot(fig_wc, use_container_width=True)
 
-    # Descarga
     buf = io.BytesIO()
     fig_wc.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=fig_wc.get_facecolor())
     buf.seek(0)
     
-    st.download_button("⬇️ Descargar Imagen PNG", data=buf.read(), file_name="nube_de_palabras.png", mime="image/png")
+    st.download_button("⬇️ Descargar Imagen PNG", data=buf.read(), file_name="nube_de_palabras.png", mime="image/png", use_container_width=True)
 
-    # Tabla de Frecuencias opcional
-    with st.expander("📊 Ver Top 20 palabras más frecuentes"):
+    with st.expander("📊 Ver tabla de frecuencias (Top 20)"):
         st.dataframe(df_freq.head(20), use_container_width=True)
     
     plt.close("all")
